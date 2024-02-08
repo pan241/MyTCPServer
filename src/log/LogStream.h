@@ -1,7 +1,8 @@
 #ifndef LOGSTREAM_H
 #define LOGSTREAM_H
 
-#include "noncopyable.h"
+#include "../base/noncopyable.h"
+#include <string>
 #include <string.h>
 
 const int kSmallBuffer = 4000;
@@ -41,6 +42,21 @@ private:
     char* _cur;
 };
 
+class charStream : noncopyable
+{
+public:
+    charStream()
+        : _data(nullptr), _len(0)
+    {}
+
+    explicit charStream(const char* data, int len)
+        : _data(data), _len(len)
+    {}
+    
+    const char* _data;
+    int _len;
+};
+
 class LogStream : noncopyable
 {
 public:
@@ -62,20 +78,24 @@ public:
 
     LogStream& operator<<(const void *);
 
-    LogStream& operator<<(float v)
-    {
-        *this << static_cast<double>(v);
-        return *this;
-    }
+    LogStream& operator<<(float v);
     LogStream& operator<<(double);
 
-    LogStream& operator<<(char v)
-    {
-        _buffer.append(&v, 1);
-        return *this;
-    }
+    LogStream& operator<<(char v);
+    LogStream& operator<<(const void* data);
+    LogStream& operator<<(const char* str);
+    LogStream& operator<<(const unsigned char* str);
+    LogStream& operator<<(const std::string str);
+    LogStream& operator<<(const Buffer& buf);
+    LogStream& operator<<(const charStream& v);
+
+    void append(const char* data, size_t len) { _buffer.append(data, len); }
+    const Buffer& buffer() const { return _buffer; }
+    void resetBuffer() { _buffer.reset(); }
 
 private:
+    static const int kMaxNumericSize = 48;
+
     Buffer _buffer;
 
     template<typename T>
