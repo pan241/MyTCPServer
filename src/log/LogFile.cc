@@ -42,7 +42,7 @@ void LogFile::flush()
     }
 }
 
-void LogFile::append_unlocked(const char* date, int len)
+void LogFile::append_unlocked(const char* data, int len)
 {
     _file->append(data, len);
 }

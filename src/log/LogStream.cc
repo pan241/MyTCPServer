@@ -76,11 +76,6 @@ LogStream& LogStream::operator<<(unsigned long long v)
     return *this;    
 }
 
-LogStream& LogStream::operator<<(const void *)
-{
-
-}
-
 LogStream& LogStream::operator<<(float v)
 {
     *this << static_cast<double>(v);
@@ -89,7 +84,12 @@ LogStream& LogStream::operator<<(float v)
 
 LogStream& LogStream::operator<<(double v)
 {
-    if (_buffer.avail() >= )
+    if (_buffer.avail() >= kMaxNumericSize)
+    {
+        int len = snprintf(_buffer.current(), kMaxNumericSize, "%.12g", v);
+        _buffer.add(len);
+    }
+    return *this;
 }
 
 LogStream& LogStream::operator<<(char v)
@@ -100,7 +100,7 @@ LogStream& LogStream::operator<<(char v)
 
 LogStream& LogStream::operator<<(const void* data)
 {
-
+    return operator<<(static_cast<const char*>(data));
 }
 
 LogStream& LogStream::operator<<(const char* str)
