@@ -31,7 +31,7 @@ public:
     void add(size_t len) { _cur += len; }
 
     void reset() { _cur = _data; }
-    void bzero() { memZero(_data, sizeof(_data)); }
+    void bzero() { memset(_data, 0, sizeof(_data)); }
 
     std::string toSting() const {return std::string(_data, length()); }
 
@@ -64,7 +64,8 @@ public:
 
     LogStream& operator<<(bool v)
     {
-        _buffer.append(v ? "1" : "0", 1);    
+        _buffer.append(v ? "1" : "0", 1);
+        return *this;    
     }
 
     LogStream& operator<<(short);
@@ -75,8 +76,6 @@ public:
     LogStream& operator<<(unsigned long);
     LogStream& operator<<(long long);
     LogStream& operator<<(unsigned long long);
-
-    LogStream& operator<<(const void *);
 
     LogStream& operator<<(float v);
     LogStream& operator<<(double);
