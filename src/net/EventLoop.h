@@ -14,13 +14,13 @@
 class Channel;
 class Poller;
 
-class Eventloop : noncopyable
+class EventLoop : noncopyable
 {
 public:
     using Functor = std::function<void()>;
 
-    Eventloop();
-    ~Eventloop();
+    EventLoop();
+    ~EventLoop();
 
     void loop();
     void quit();
@@ -34,7 +34,7 @@ public:
     bool hasChannel(Channel* channel);
 
 
-    Timestamp pollReturnTime() const {}
+    Timestamp pollReturnTime() const { return _pollReturnTime; }
 
 private:
     void handleRead();
@@ -51,9 +51,14 @@ private:
     std::unique_ptr<Poller> _poller;
     std::unique_ptr<TimerQueue> _timeQueue;
 
+    int _wakeupFd;
+    std::unique_ptr<Channel> _wakeupChannel;
+
+    ChannelList _activeChannels;
+    Channel* _currentActiveChannel;
+
     std::mutex _mutex;
     std::vector<Functor> _pendingFunctors;
-
 };
 
 

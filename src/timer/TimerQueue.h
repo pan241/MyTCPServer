@@ -18,7 +18,7 @@ public:
     explicit TimerQueue(EventLoop* loop);
     ~TimerQueue();
 
-    void addTimer(TimerCallback cb, Timestamp whe, double interval);
+    void addTimer(TimerCallback cb, Timestamp when, double interval);
 private:
     using Entry = std::pair<Timestamp, Timer*>;
     using TimerList = std::set<Entry>;

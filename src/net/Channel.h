@@ -9,7 +9,7 @@
 #include "../base/Timestamp.h"
 #include "../log/Logging.h"
 
-class Eventloop;
+class EventLoop;
 
 class Channel : noncopyable
 {
@@ -17,7 +17,7 @@ public:
     using EventCallback = std::function<void()>;
     using ReadEventCallback = std::function<void(Timestamp)>;
 
-    Channel(Eventloop* loop, int fd);
+    Channel(EventLoop* loop, int fd);
     ~Channel();
 
     void handleEvent(Timestamp receiveTime);
@@ -31,7 +31,6 @@ public:
     void disableReading() { _events &= ~kReadEvent; update(); }
     void enableWriting() { _events |= kWriteEvent; update(); }
     void disableWriting() { _events &= ~kWriteEvent; update(); }
-    void enableReading() { _events |= kReadEvent; update(); }
     void disableAll() { _events &= kNoneEvent; update(); }
 
     bool isNoneEvent() const { return _events == kNoneEvent; }
@@ -47,7 +46,7 @@ public:
     int index() { return _index; }
     void set_index(int idx) { _index = idx; }
     
-    Eventloop* ownerLoop() { return _loop; }
+    EventLoop* ownerLoop() { return _loop; }
     void remove();
 
 private:
@@ -58,7 +57,7 @@ private:
     static const int kReadEvent;
     static const int kWriteEvent;
 
-    Eventloop* _loop;
+    EventLoop* _loop;
     const int _fd;
     int _events;
     int _revents;
