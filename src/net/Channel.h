@@ -35,7 +35,7 @@ public:
 
     bool isNoneEvent() const { return _events == kNoneEvent; }
     bool isReading() const { return _events & kReadEvent; }
-    bool isWriteing() const {return _events & kWriteEvent; }
+    bool isWriting() const {return _events & kWriteEvent; }
 
     void tie(const std::shared_ptr<void>&);
 

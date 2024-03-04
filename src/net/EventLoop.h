@@ -9,6 +9,7 @@
 
 #include "../base/noncopyable.h"
 #include "../base/Timestamp.h"
+#include "../base/CurrentThread.h"
 #include "../timer/TimerQueue.h"
 
 class Channel;
@@ -26,6 +27,7 @@ public:
     void quit();
 
     void runInLoop(Functor cb);
+    void queueInLoop(Functor cb);
 
     void wakeup();
 
@@ -33,6 +35,24 @@ public:
     void removeChannel(Channel* channel);
     bool hasChannel(Channel* channel);
 
+    bool isInLoopThread() const { return _threadId == CurrentThread::tid(); }
+
+    void runAt(Timestamp timestamp, Functor&& cb)
+    {
+        _timerQueue->addTimer(std::move(cb), timestamp, 0.0);
+    }
+
+    void runAfter(double waitTime, Functor&& cb)
+    {
+        Timestamp time(addTime(Timestamp::now(), waitTime));
+        runAt(time, std::move(cb));
+    }
+
+    void runEvery(double interval, Functor&& cb)
+    {
+        Timestamp time(addTime(Timestamp::now(), interval));
+        _timerQueue->addTimer(std::move(cb), time, interval);
+    }
 
     Timestamp pollReturnTime() const { return _pollReturnTime; }
 
@@ -46,10 +66,10 @@ private:
     std::atomic_bool _quit;
     std::atomic_bool _callingPendingFunctors;
 
-    const pid_t _tid; 
+    const pid_t _threadId; 
     Timestamp _pollReturnTime;
     std::unique_ptr<Poller> _poller;
-    std::unique_ptr<TimerQueue> _timeQueue;
+    std::unique_ptr<TimerQueue> _timerQueue;
 
     int _wakeupFd;
     std::unique_ptr<Channel> _wakeupChannel;

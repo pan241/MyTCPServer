@@ -23,7 +23,7 @@ public:
 
     virtual bool hasChannel(Channel* channel) const;
 
-    static Poller* newDefaultChannel(EventLoop* loop);
+    static Poller* newDefaultPoller(EventLoop* loop);
 
 protected:
     using ChannelMap = std::unordered_map<int, Channel*>;

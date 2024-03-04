@@ -94,9 +94,9 @@ inline Logger::LogLevel Logger::logLevel()
 
 const char* getErrnoMsg(int savedErrno);
 
-#define LOG_DEBUG if (logLevel() <= Logger::DEBUG) \
+#define LOG_DEBUG if (Logger::logLevel() <= Logger::DEBUG) \
 	Logger(__FILE__, __LINE__, Logge::DEBUG, __func__).stream()
-#define LOG_INFO if (logLevel() <= Logger::INFO) \
+#define LOG_INFO if (Logger::logLevel() <= Logger::INFO) \
 	Logger(__FILE__, __LINE__).stream()
 #define LOG_WARN Logger(__FILE__, __LINE__, Logger::WARN).stream()
 #define LOG_ERROR Logger(__FILE__, __LINE__, Logger::ERROR).stream()

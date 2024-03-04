@@ -22,38 +22,86 @@ int createEventfd()
 
 EventLoop::EventLoop()
     : _looping(false),
-      _quit(false)
-{}
+      _quit(false),
+      _callingPendingFunctors(false),
+      _threadId(CurrentThread::tid()),
+      _poller(Poller::newDefaultPoller(this)),
+      _timerQueue(new TimerQueue(this)),
+      _wakeupFd(createEventfd()),
+      _wakeupChannel(new Channel(this, _wakeupFd)),
+      _currentActiveChannel(nullptr)
+{
+
+
+    _wakeupChannel->disableAll();
+}
 
 
 EventLoop::~EventLoop()
 {
-
+    _wakeupChannel->disableAll();
+    _wakeupChannel->remove();
+    ::close(_wakeupFd);
+    t_loopInThisThread = nullptr;
 }
 
 void EventLoop::loop()
 {
     _looping = true;
+    _quit = false;
 
+    LOG_INFO << "EventLoop " << this << " start looping";
+
+    while (!_quit)
+    {
+        _activeChannels.clear();
+        _pollReturnTime = _poller->poll(kPollTimeMs, &_activeChannels);
+        for (Channel* channel : _activeChannels)
+        {
+            _currentActiveChannel = channel;
+            channel->handleEvent(_pollReturnTime);
+        }
+        _currentActiveChannel = nullptr;
+        doPendingFunctors();
+    }
+    _looping = false;
 }
 
     
 void EventLoop::quit()
 {
+    _quit = true;
 
+    if (!isInLoopThread())
+    {
+        wakeup();
+    }
 }
 
 void EventLoop::runInLoop(Functor cb)
 {
-    std::unique_lock<std::mutex> lock(_mutex);
-    _pendingFunctors.push_back(std::move(cb));
+    if (isInLoopThread())
+    {
+        cb();
+    }
+    else
+    {
+        queueInLoop(cb);
+    }
+}
+
+void EventLoop::queueInLoop(Functor cb)
+{
+    {
+        std::unique_lock<std::mutex> lock(_mutex);
+        _pendingFunctors.emplace_back(cb);
+    }
 
     if (!isInLoopThread() || _callingPendingFunctors)
     {
         wakeup();
     }
 }
-    
 
 void EventLoop::updateChannel(Channel* channel)
 {
@@ -88,6 +136,21 @@ void EventLoop::handleRead()
     {
         LOG_ERROR << "EventLoop::handleRead() reads " << n << " bytes instead of 8";
     }
+}
+
+void EventLoop::updateChannel(Channel* channel)
+{
+    _poller->updateChannel(channel);
+}
+
+void EventLoop::removeChannel(Channel* channel)
+{
+    _poller->removeChannel(channel);
+}
+
+bool EventLoop::hasChannel(Channel* channel)
+{
+    return _poller->hasChannel(channel);
 }
 
 void EventLoop::doPendingFunctors()

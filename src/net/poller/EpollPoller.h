@@ -1,5 +1,5 @@
-#ifndef EPOLLER_H
-#define EPOLLER_H
+#ifndef EPOLLPOLLER_H
+#define EPOLLPOLLER_H
 
 #include <vector>
 #include <sys/epoll.h>
@@ -9,13 +9,13 @@
 #include "../log/Logging.h"
 #include "../Poller.h"
 
-class Epoller : public Poller
+class EpollPoller : public Poller
 {
     using EventList = std::vector<epoll_event>;
 
 public:
-    Epoller(EventLoop* loop);
-    ~Epoller() override;
+    EpollPoller(EventLoop* loop);
+    ~EpollPoller() override;
 
     Timestamp poll(int timeoutMs, ChannelList* activateChannels) override;
     void updateChannel(Channel* channel) override;
