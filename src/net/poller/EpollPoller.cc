@@ -36,22 +36,85 @@ EpollPoller::~EpollPoller()
 
 Timestamp EpollPoller::poll(int timeoutMs, ChannelList* activateChannels)
 {
+    int numEvents = ::epoll_wait(_epollfd, &*_events.begin(), static_cast<int>(_events.size()), timeoutMs);
+    int savedErrno = errno;
+    Timestamp now(Timestamp::now());
 
+    if (numEvents > 0)
+    {
+        fillActiveChannels(numEvents, activateChannels);
+        if (numEvents == _events.size())
+        {
+            _events.resize(_events.size() * 2);
+        }
+    }
+    else if (numEvents == 0)
+    {
+        LOG_DEBUG << "nothing happened";
+    }
+    else
+    {
+        if (savedErrno != EINTR)
+        {
+            errno = savedErrno;
+            LOG_ERROR << "EPollPoller::Poll()";
+        }
+    }
+    return now;
 }
 
 void EpollPoller::updateChannel(Channel* channel)
 {
+    const int index = channel->index();
 
+    if (index == kNew || index == kDeleted)
+    {
+        int fd = channel->fd();
+        if (index == kNew)
+        {
+            _channels[fd] = channel;
+        }
+        else
+        {
+        }
+        channel->set_index(kAdded);
+        update(EPOLL_CTL_ADD, channel);
+    } 
+    else
+    {
+        if (channel->isNoneEvent())
+        {
+            update(EPOLL_CTL_DEL, channel);
+            channel->set_index(kDeleted);
+        }
+        else
+        {
+            update(EPOLL_CTL_MOD, channel);
+        }
+    }
 }
 
 void EpollPoller::removeChannel(Channel* channel)
 {
-
+    int fd = channel->fd();
+    LOG_INFO << "fd = " <<fd;
+    int index = channel->index();
+    size_t n = _channels.erase(fd);
+    if (index == kAdded)
+    {
+        update(EPOLL_CTL_DEL, channel);
+    }
+    channel->set_index(kNew);
 }
 
 void EpollPoller::fillActiveChannels(int num, ChannelList* activeChannels) const
 {
-
+    for (int i = 0; i < num; i++)
+    {
+        Channel* channel = static_cast<Channel*>(_events[i].data.ptr);
+        channel->set_revents(_events[i].events);
+        activeChannels->push_back(channel);
+    }
 }
 
 void EpollPoller::update(int operation, Channel* channel)
@@ -62,4 +125,16 @@ void EpollPoller::update(int operation, Channel* channel)
     event.events = channel->events();
     event.data.ptr = channel;
     int fd = channel->fd();
+
+    if (::epoll_ctl(_epollfd, operation, fd, &event) < 0)
+    {
+        if (operation == EPOLL_CTL_DEL)
+        {
+            LOG_ERROR << "epoll_ctl() del error" << " fd =" << fd << " errno =" << errno;
+        }
+        else
+        {
+            LOG_FATAL << "epoll_ctl() add/mod error" << " fd =" << fd << " errno =" << errno;
+        }
+    }
 }

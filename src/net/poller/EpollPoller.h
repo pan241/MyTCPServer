@@ -26,7 +26,7 @@ private:
 
     void fillActiveChannels(int num, ChannelList* activeChannels) const;
 
-    void update(int operation, Channel* Channel);
+    void update(int operation, Channel* channel);
 
     int _epollfd;
     EventList _events;
