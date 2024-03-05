@@ -3,7 +3,6 @@
 
 #include "../Poller.h"
 #include "../../log/Logging.h"
-#include "../Channel.h"
 
 #include <vector>
 

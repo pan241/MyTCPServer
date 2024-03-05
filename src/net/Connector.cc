@@ -1,31 +1,77 @@
-#ifndef CONNECTOR_H
-#define CONNECTOR_H
+#include "Connector.h"
 
-#include <functional>
-#include <memory>
+#include "errno.h"
 
-#include "../base/noncopyable.h"
-#include "InetAddress.h"
+#include "../log/Logging.h"
 
-class Channel;
-class EventLoop;
 
-class Connector : noncopyable,
-            public std::enable_shared_from_this<Connector>
+const int Connector::kMaxRetryDelayMs;
+
+Connector::Connector(EventLoop* loop, const InetAddress& serverAddr)
+
+{}
+
+Connector::~Connector()
 {
-public:
 
+}
 
-private:
-    enum States
-    {
-        kDisconnected,
-        kConnecting,
-        kConnected
-    };
-    static const int kMaxRetryDelayMs = 30 * 1000;
+void Connector::start()
+{
+
+}
+
+void Connector::restart()
+{
+
+}
+
+void Connector::stop()
+{
+
+}
+
+void Connector::startInLoop()
+{
+
+}
+
+void Connector::stopInLoop()
+{
+
+}
+
+void Connector::connect()
+{
+
+}
+
+void Connector::connecting(int sockfd)
+{
+
+}
+
+void Connector::handleWrite()
+{
+
+}
+
+void Connector::handleError()
+{
+
+}
+
+void Connector::retry(int sockfd)
+{
+
+}
+
+int Connector::removeAndResetChannel()
+{
+
+}
+
+void Connector::resetChannel()
+{
     
-
-};
-
-#endif
+}
