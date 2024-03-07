@@ -40,6 +40,8 @@ public:
 
     void shutdown();
 
+    void forceClose();
+
     void setConnectionCallback(const ConnectionCallback& cb) { _connectionCallback = cb; }
     void setMessageCallback(const MessageCallback& cb) { _messageCallback = cb; }
     void setCloseCallback(const CloseCallback& cb) { _closeCallback = cb; }
@@ -71,6 +73,7 @@ private:
     void sendInLoop(const void* message, size_t len);
     void sendInLoop(const std::string& message);
     void shutdownInLoop();
+    void forceCloseInLoop();
 
     EventLoop* _loop;
     const std::string _name;

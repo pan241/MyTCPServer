@@ -5,7 +5,6 @@
 #include <string.h>
 #include <string>
 
-
 class InetAddress
 {
 public:
@@ -15,6 +14,7 @@ public:
         _addr(addr)
     {}
 
+    sa_family_t family() const { return _addr.sin_family; }
     std::string toIp()const;
     std::string toIpPort() const;
     uint16_t toPort() const;
