@@ -1,11 +1,12 @@
 #include "InetAddress.h"
 
-InetAddress::InetAddress(uint16_t port = 0, std::string ip)
+InetAddress::InetAddress(uint16_t port, std::string ip)
 {
     ::bzero(&_addr, sizeof(_addr));
     _addr.sin_family = AF_INET;
     _addr.sin_port = ::htons(port);
-    _addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    //_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    _addr.sin_addr.s_addr = inet_addr(ip.c_str());
 }
 
 

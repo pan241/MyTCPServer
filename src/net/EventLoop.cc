@@ -1,15 +1,17 @@
 #include "EventLoop.h"
-#include "../log/Logging.h"
+#include "Logger.h"
 #include "Poller.h"
 
 #include <unistd.h>
 #include <sys/eventfd.h>
+#include <errno.h>
 
-
+// 防止一个线程创建多个eventloop
 __thread EventLoop *t_loopInThisThread = nullptr;
 
 const int kPollTimeMs = 10000;
 
+// 唤醒subReactor
 int createEventfd()
 {
     int evtfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
@@ -31,11 +33,18 @@ EventLoop::EventLoop()
       _wakeupChannel(new Channel(this, _wakeupFd)),
       _currentActiveChannel(nullptr)
 {
-
-
-    _wakeupChannel->disableAll();
+    LOG_DEBUG << "EventLoop created in thread " << _threadId;
+    if (t_loopInThisThread)
+    {
+        LOG_FATAL << "Another EventLoop " << t_loopInThisThread << " in thread " << _threadId;
+    }
+    else
+    {
+        t_loopInThisThread = this;
+    }
+    _wakeupChannel->setReadCallback(std::bind(&EventLoop::handleRead, this));
+    _wakeupChannel->enableReading();
 }
-
 
 EventLoop::~EventLoop()
 {
@@ -43,6 +52,16 @@ EventLoop::~EventLoop()
     _wakeupChannel->remove();
     ::close(_wakeupFd);
     t_loopInThisThread = nullptr;
+}
+
+void EventLoop::handleRead()
+{
+    uint64_t one = 1;
+    ssize_t n = ::read(_wakeupFd, &one, sizeof(one));
+    if (n != sizeof(one))
+    {
+        LOG_ERROR << "EventLoop::handleRead() reads " << n << " bytes instead of 8";
+    }
 }
 
 void EventLoop::loop()
@@ -66,7 +85,6 @@ void EventLoop::loop()
     }
     _looping = false;
 }
-
     
 void EventLoop::quit()
 {
@@ -126,31 +144,6 @@ void EventLoop::wakeup()
     {
         LOG_ERROR << "EventLoop::wakeup() write " << n << " bytes instead of 8";
     }
-}
-
-void EventLoop::handleRead()
-{
-    uint64_t one = 1;
-    ssize_t n = ::read(_wakeupFd, &one, sizeof(one));
-    if (n != sizeof(one))
-    {
-        LOG_ERROR << "EventLoop::handleRead() reads " << n << " bytes instead of 8";
-    }
-}
-
-void EventLoop::updateChannel(Channel* channel)
-{
-    _poller->updateChannel(channel);
-}
-
-void EventLoop::removeChannel(Channel* channel)
-{
-    _poller->removeChannel(channel);
-}
-
-bool EventLoop::hasChannel(Channel* channel)
-{
-    return _poller->hasChannel(channel);
 }
 
 void EventLoop::doPendingFunctors()

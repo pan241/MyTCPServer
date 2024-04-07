@@ -1,5 +1,4 @@
-#ifndef TCPSERVER_H
-#define TCPSERVER_H
+#pragma once
 
 #include <atomic>
 #include <unordered_map>
@@ -9,8 +8,9 @@
 #include "EventLoop.h"
 #include "EventLoopThreadPoll.h"
 #include "Acceptor.h"
-#include "../base/noncopyable.h"
+#include "noncopyable.h"
 #include "InetAddress.h"
+#include "Callback.h"
 
 class TcpServer : noncopyable
 {
@@ -29,7 +29,7 @@ public:
               Option option = kNoReusePort);
     ~TcpServer();
 
-    void setThreadNum(int numThreads);
+    void setThreadNum(int numThreads); // 设置subloop个数
 
     std::shared_ptr<EventLoopThreadPoll> threadPool() { return _threadPool; }
 
@@ -37,6 +37,7 @@ public:
     const std::string& name() const { return _name; }
     EventLoop* getLoop() const { return _loop; }
 
+    // 开始监听
     void start();
 
     void setConnectionCallback(const ConnectionCallback& cb) { _connectionCallback = cb; }
@@ -51,10 +52,11 @@ private:
 
     using ConnectionMap = std::unordered_map<std::string, TcpConnectionPtr>;
 
-    EventLoop* _loop;
+    EventLoop* _loop; // base loop
     const std::string _ipPort;
     const std::string _name;
-    std::unique_ptr<Acceptor> _acceptor;
+
+    std::unique_ptr<Acceptor> _acceptor; // mainloop监听事件
     std::shared_ptr<EventLoopThreadPoll> _threadPool;
 
     ConnectionCallback _connectionCallback;
@@ -67,5 +69,3 @@ private:
     int _nextConnId;
     ConnectionMap _connections;
 };
-
-#endif

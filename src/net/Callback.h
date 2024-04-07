@@ -1,10 +1,9 @@
-#ifndef CALLBACK_H
-#define CALLBACK_H
+#pragma once
 
 #include <functional>
 #include <memory>
 
-#include "../base/Timestamp.h"
+#include "Timestamp.h"
 
 class Buffer;
 class TcpConnection;
@@ -20,6 +19,3 @@ using MessageCallback = std::function<void(const TcpConnectionPtr&, Buffer*, Tim
 
 void defaultConnectionCallback(const TcpConnectionPtr& conn);
 void defaultMessageCallback(const TcpConnectionPtr& conn, Buffer* buffer, Timestamp receiveTime);
-
-
-#endif

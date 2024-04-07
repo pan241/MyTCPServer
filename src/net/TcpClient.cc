@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "Connector.h"
-#include "../log/Logging.h"
+#include "Logger.h"
 #include "EventLoop.h"
 #include "SocketOperation.h"
 
@@ -62,7 +62,7 @@ TcpClient::~TcpClient()
         _loop->runInLoop(std::bind(&TcpConnection::setCloseCallback, conn, cb));
         if (unique)
         {
-            conn->forceClose();
+            // conn->forceClose();
         }
     }
     else
@@ -100,13 +100,15 @@ void TcpClient::stop()
 
 void TcpClient::newConnection(int sockfd)
 {
-    InetAddress peerAddr(*(sockaddr_in*)&sockets::getPeerAddr(sockfd));
+    auto addr = sockets::getPeerAddr(sockfd);
+    InetAddress peerAddr(*(sockaddr_in*)&addr);
     char buf[32];
     snprintf(buf, sizeof(buf), ":%s#%d", peerAddr.toIpPort().c_str(), _nextConnId);
     ++_nextConnId;
     std::string connName = _name + buf;
 
-    InetAddress localAddr(*(sockaddr_in*)&sockets::getLocalAddr(sockfd));
+    addr = sockets::getLocalAddr(sockfd);
+    InetAddress localAddr(*(sockaddr_in*)&addr);
 
     TcpConnectionPtr conn(new TcpConnection(_loop, connName, sockfd, localAddr, peerAddr));
     conn->setConnectionCallback(_connectionCallback);

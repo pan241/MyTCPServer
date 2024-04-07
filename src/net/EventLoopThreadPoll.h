@@ -1,12 +1,11 @@
-#ifndef EVENTLOOPTHREADPOLL_H
-#define EVENTLOOPTHREADPOLL_H
+#pragma once
 
 #include <functional>
 #include <memory>
 #include <vector>
 #include <string>
 
-#include "../base/noncopyable.h"
+#include "noncopyable.h"
 
 class EventLoop;
 class EventLoopThread;
@@ -38,5 +37,3 @@ private:
     std::vector<std::unique_ptr<EventLoopThread>> _threads;
     std::vector<EventLoop*> _loops;
 };
-
-#endif

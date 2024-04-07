@@ -1,4 +1,5 @@
 #include "CurrentThread.h"
+#include <sys/syscall.h>
 
 namespace CurrentThread
 {

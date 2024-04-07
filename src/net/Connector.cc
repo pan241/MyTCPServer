@@ -2,7 +2,7 @@
 
 #include <errno.h>
 
-#include "../log/Logging.h"
+#include "Logger.h"
 #include "SocketOperation.h"
 
 const int Connector::kMaxRetryDelayMs;

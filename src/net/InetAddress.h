@@ -1,5 +1,4 @@
-#ifndef INETADDRESS_H
-#define INETADDRESS_H
+#pragma once
 
 #include <arpa/inet.h>
 #include <string.h>
@@ -15,6 +14,7 @@ public:
     {}
 
     sa_family_t family() const { return _addr.sin_family; }
+
     std::string toIp()const;
     std::string toIpPort() const;
     uint16_t toPort() const;
@@ -25,5 +25,3 @@ public:
 private:
     sockaddr_in _addr;
 };
-
-#endif

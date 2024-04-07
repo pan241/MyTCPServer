@@ -1,6 +1,7 @@
 #include "Channel.h"
 #include "EventLoop.h"
 
+#include <sys/epoll.h>
 
 const int Channel::kNoneEvent = 0;
 const int Channel::kReadEvent = EPOLLIN | EPOLLPRI;
@@ -26,9 +27,17 @@ void Channel::tie(const std::shared_ptr<void>& obj)
     _tied = true;
 }
 
+// update在poller中更改相应事件
 void Channel::update()
 {
+    // 通过eventloop调用poller相应方法
     _loop->updateChannel(this);
+}
+
+// 在eventloop中删除当前channel
+void Channel::remove()
+{
+    _loop->removeChannel(this);
 }
 
 void Channel::handleEvent(Timestamp receiveTime)
@@ -40,16 +49,17 @@ void Channel::handleEvent(Timestamp receiveTime)
         {
             handleEventWithGuard(receiveTime);
         }
-        else
-        {
-            handleEventWithGuard(receiveTime);
-        }
+    }    
+    else
+    {
+        handleEventWithGuard(receiveTime);
     }
+    
 }
 
 void Channel::handleEventWithGuard(Timestamp receiveTime)
 {
-    if ((_revents & EPOLLHUP) && (_revents & EPOLLIN))
+    if ((_revents & EPOLLHUP) && !(_revents & EPOLLIN))
     {
         if (_closeCallback)
         {
@@ -68,7 +78,7 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
 
     if (_revents & (EPOLLIN | EPOLLPRI))
     {
-        //LOG_DEBUG << "channel has read events, fd is " << this->_fd;
+        LOG_DEBUG << "channel has read events, fd is " << this->_fd;
         if (_readCallback)
         {
             _readCallback(receiveTime);
@@ -83,9 +93,4 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
         }
     }
 
-}
-
-void Channel::remove()
-{
-    _loop->removeChannel(this);
 }

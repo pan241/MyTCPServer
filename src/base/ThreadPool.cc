@@ -1,7 +1,7 @@
 #include "ThreadPool.h"
-#include "../log/Logging.h"
+#include "Logger.h"
 
-ThreadPool::ThreadPool(const std::string& name = std::string("ThreadPool"))
+ThreadPool::ThreadPool(const std::string& name)
     : _mutex(), 
       _cond(),
       _name(name),

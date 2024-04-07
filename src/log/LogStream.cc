@@ -1,14 +1,15 @@
 #include "LogStream.h"
 #include <algorithm>
 
-const char digits[] = "9876543210";
+static const char digits[] = {'9', '8', '7', '6', '5', '4', '3', '2', '1', '0',
+                               '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
 template <typename T>
 void LogStream::formatIntger(T num)
 {
     if (_buffer.avail() >= kMaxNumericSize)
     {
-        char* start = _buffer._cur;
+        char* start = _buffer.current();
         char* cur = start;
         const char* zero = digits + 9;
         bool negative = (num < 0);

@@ -15,7 +15,7 @@ EventLoopThreadPoll:: ~EventLoopThreadPoll()
 {   
 }
 
-void EventLoopThreadPoll::start(const ThreadInitCallback& cb = ThreadInitCallback())
+void EventLoopThreadPoll::start(const ThreadInitCallback& cb)
 {
     _started = true;
 
@@ -40,7 +40,7 @@ EventLoop* EventLoopThreadPoll::getNextLoop()
     if (!_loops.empty())
     {
         loop = _loops[_next];
-        _next = _next;
+        ++_next;
         if (_next >= _loops.size())
         {
             _next = 0;

@@ -1,5 +1,5 @@
 #include "HttpResponse.h"
-#include "../net/Buffer.h"
+#include "Buffer.h"
 
 #include <stdio.h>
 #include <string.h>

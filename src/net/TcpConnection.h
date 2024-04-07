@@ -6,8 +6,8 @@
 #include <atomic>
 
 #include "Callback.h"
-#include "../base/noncopyable.h"
-#include "../base/Timestamp.h"
+#include "noncopyable.h"
+#include "Timestamp.h"
 #include "InetAddress.h"
 #include "Buffer.h"
 

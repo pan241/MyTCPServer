@@ -1,8 +1,7 @@
-#ifndef POLLPOLLER_H
-#define POLLPOLLER_H
+#pragma once
 
-#include "../Poller.h"
-#include "../../log/Logging.h"
+#include "Poller.h"
+#include "Logger.h"
 
 #include <vector>
 
@@ -23,5 +22,3 @@ private:
     using PollFdList = std::vector<struct pollfd>;
     PollFdList _pollfds;
 };
-
-#endif

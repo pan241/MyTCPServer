@@ -1,5 +1,4 @@
-#ifndef BUFFERE_H
-#define BUFFERE_H
+#pragma once
 
 #include <vector>
 #include <string>
@@ -26,6 +25,10 @@ public:
           _writeIndex(kCheapPrepend)
     {}
 
+    size_t readableBytes() const { return _writeIndex - _readIndex; }
+    size_t writableBytes() const { return _buffer.size() - _writeIndex;}
+    size_t prependableByes() const { return _readIndex; }
+
     void swap(Buffer& rhs)
     {
         _buffer.swap(rhs._buffer);
@@ -33,13 +36,42 @@ public:
         std::swap(_writeIndex, rhs._writeIndex);
     }
 
-    size_t readableBytes() const { return _writeIndex - _readIndex; }
-
-    size_t writableBytes() const { return _buffer.size() - _writeIndex;}
-
-    size_t prependableByes() const { return _readIndex; }
-
     const char* peek() const { return begin() + _readIndex; }
+
+    std::string retrieveAllAsString() { return retrieveAsString(readableBytes()); }
+
+    std::string retrieveAsString(size_t len)
+    {
+        assert(len <= readableBytes());
+        std::string result(peek(), len);
+        retrieve(len); // 缓冲区复位
+        return result;
+    }
+
+    void retrieve(size_t len)
+    {
+        // assert(len <= readableBytes());
+        if (len <= readableBytes())
+        {
+            _readIndex += len;
+        }
+        else
+        {
+            rertrieveAll();
+        }
+    }
+
+    void rertrieveAll()
+    {
+        _readIndex = _writeIndex = kCheapPrepend;
+    }
+
+     void retrieveUntil(const char* end)
+    {
+        assert(peek() <= end);
+        assert(end <= beginWrite());
+        retrieve(end - peek());
+    }
 
     const char* findCRLF() const
     {
@@ -59,51 +91,15 @@ public:
         return static_cast<const char*>(eol);
     }
 
-    void retrieve(size_t len)
-    {
-        assert(len <= readableBytes());
-        if (len < readableBytes())
-        {
-            _readIndex += len;
-        }
-        else
-        {
-            rertrieveAll();
-        }
-    }
-
-    void retrieveUntil(const char* end)
-    {
-        assert(peek() <= end);
-        assert(end <= beginWrite());
-        retrieve(end - peek());
-    }
-
-    void rertrieveAll()
-    {
-        _readIndex = kCheapPrepend;
-        _writeIndex = kCheapPrepend;
-    }
-
-    std::string retrieveAllAsString() { return retrieveAsString(readableBytes()); }
-
-    std::string retrieveAsString(size_t len)
-    {
-        assert(len <= readableBytes());
-        std::string result(peek(), len);
-        retrieve(len);
-        return result;
-    }
-
-    void append(const std::string& str) { append(str.data(), str.size()); }
-
-    void append(const void* data, size_t len)
+    void append(const char* data, size_t len)
     {
         ensureWritableBytes(len);
         std::copy(data, data+len, beginWrite());
         hasWritten(len);
     }
 
+    void append(const std::string& str) { append(str.data(), str.size()); }
+ 
     void ensureWritableBytes(size_t len)
     {
         if (writableBytes() < len)
@@ -126,7 +122,6 @@ public:
 
 private:
     char* begin() { return &*_buffer.begin(); }
-
     const char* begin() const { return &*_buffer.begin(); }
 
     void makeSpace(size_t len)
@@ -152,5 +147,3 @@ private:
 
     static const char kCRLF[];
 };
-
-#endif

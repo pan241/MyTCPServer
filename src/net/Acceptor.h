@@ -1,5 +1,4 @@
-#ifndef ACCEPTOR_H
-#define ACCEPTOR_H
+#pragma once
 
 #include "Socket.h"
 #include "Channel.h"
@@ -17,7 +16,7 @@ public:
 
     void setNewConnectionCallback(const NewConnectionCallback& cb)
     {
-        _newConnectionCallback = cb;
+        _newConnectionCallback = std::move(cb);
     }
 
     void listen();
@@ -27,13 +26,10 @@ public:
 private:
     void handleRead();
 
-    EventLoop* _loop;
+    EventLoop* _loop; // main loop
     Socket _acceptSocket;
     Channel _acceptChannel;
     NewConnectionCallback _newConnectionCallback;
     bool _listening;
-
+    int _idleFd;
 };
-
-
-#endif

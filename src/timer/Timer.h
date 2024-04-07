@@ -3,8 +3,8 @@
 
 #include <functional>
 
-#include "../base/noncopyable.h"
-#include "../base/Timestamp.h"
+#include "noncopyable.h"
+#include "Timestamp.h"
 
 class Timer : noncopyable
 {

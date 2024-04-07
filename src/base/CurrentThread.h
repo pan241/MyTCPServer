@@ -2,7 +2,6 @@
 #define CURRENTTHREAD_H
 
 #include <unistd.h>
-#include <sys/syscall.h>
 
 namespace CurrentThread
 {

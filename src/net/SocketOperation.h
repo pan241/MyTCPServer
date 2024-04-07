@@ -1,5 +1,4 @@
-#ifndef SOCKETOPERATION_H
-#define SOCKETOPERATION_H
+#pragma once
 
 #include <arpa/inet.h>
 
@@ -13,9 +12,10 @@ void close(int sockfd);
 
 int getSocketError(int sockfd);
 
+
+
+
 struct sockaddr_in6 getLocalAddr(int sockfd);
 struct sockaddr_in6 getPeerAddr(int sockfd);
 bool isSelfConnect(int sockfd);
 };
-
-#endif

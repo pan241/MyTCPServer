@@ -1,7 +1,7 @@
 #ifndef LOGSTREAM_H
 #define LOGSTREAM_H
 
-#include "../base/noncopyable.h"
+#include "noncopyable.h"
 #include <string>
 #include <string.h>
 
@@ -34,6 +34,7 @@ public:
     void bzero() { memset(_data, 0, sizeof(_data)); }
 
     std::string toSting() const {return std::string(_data, length()); }
+
 
 private:
     const char* end() const { return _data + sizeof(_data); }
@@ -101,8 +102,5 @@ private:
     void formatIntger(T);
 
 };
-
-
-
 
 #endif

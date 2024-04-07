@@ -1,9 +1,8 @@
-#ifndef FILEUTIL_H
-#define FILEUTIL_H
+#pragma once
 
-#include "../base/noncopyable.h"
+#include "noncopyable.h"
 #include <string>
-#include "Logging.h"
+#include "Logger.h"
 
 // file < 64KB
 class ReadSmallFile : noncopyable
@@ -62,6 +61,3 @@ private:
     char _buf[64*1024];
     off_t _writtenBytes;
 };
-
-
-#endif 

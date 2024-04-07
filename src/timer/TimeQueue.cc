@@ -1,8 +1,8 @@
 #include "TimerQueue.h"
 #include "Timer.h"
-#include "../net/Channel.h"
-#include "../log/Logging.h"
-#include "../net/EventLoop.h"
+#include "Channel.h"
+#include "Logger.h"
+#include "EventLoop.h"
 
 #include <unistd.h>
 #include <sys/timerfd.h>

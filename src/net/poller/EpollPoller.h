@@ -1,13 +1,20 @@
-#ifndef EPOLLPOLLER_H
-#define EPOLLPOLLER_H
+#pragma once
 
 #include <vector>
 #include <sys/epoll.h>
 #include <unistd.h>
 
-#include "../base/Timestamp.h"
-#include "../log/Logging.h"
-#include "../Poller.h"
+#include "Timestamp.h"
+#include "Logger.h"
+#include "Poller.h"
+
+/*
+ * epoll_create
+ * epoll_ctl
+ * epoll_wait 
+ */
+
+class Channel;
 
 class EpollPoller : public Poller
 {
@@ -31,5 +38,3 @@ private:
     int _epollfd;
     EventList _events;
 };
-
-#endif

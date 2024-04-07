@@ -10,15 +10,15 @@ const size_t Buffer::kInitialSize;
 
 ssize_t Buffer::readFd(int fd, int* savedErrno)
 {
-    char extrabuf[65536];
+    char extrabuf[65536] = {0};
 
     /*
     struct iovec{
-        ptr_t iov_base;
-        size_t iov_len;
+        ptr_t iov_base; // 缓冲区起始地址
+        size_t iov_len; // 缓冲区长度
     };
     */
-    struct iovec vec[2];
+    iovec vec[2];
     const size_t writable = writableBytes();
 
     vec[0].iov_base = begin() + _writeIndex;

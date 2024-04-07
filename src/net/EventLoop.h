@@ -1,5 +1,4 @@
-#ifndef EVENTLOOP_H
-#define EVENTLOOP_H
+#pragma once
 
 #include <atomic>
 #include <functional>
@@ -7,10 +6,10 @@
 #include <mutex>
 #include <memory>
 
-#include "../base/noncopyable.h"
-#include "../base/Timestamp.h"
-#include "../base/CurrentThread.h"
-#include "../timer/TimerQueue.h"
+#include "noncopyable.h"
+#include "Timestamp.h"
+#include "CurrentThread.h"
+#include "TimerQueue.h"
 
 class Channel;
 class Poller;
@@ -25,6 +24,8 @@ public:
 
     void loop();
     void quit();
+
+    Timestamp pollReturnTime() const { return _pollReturnTime; }
 
     void runInLoop(Functor cb);
     void queueInLoop(Functor cb);
@@ -54,8 +55,6 @@ public:
         _timerQueue->addTimer(std::move(cb), time, interval);
     }
 
-    Timestamp pollReturnTime() const { return _pollReturnTime; }
-
 private:
     void handleRead();
     void doPendingFunctors();
@@ -66,12 +65,12 @@ private:
     std::atomic_bool _quit;
     std::atomic_bool _callingPendingFunctors;
 
-    const pid_t _threadId; 
+    const pid_t _threadId; // 创建eventloop的线程
     Timestamp _pollReturnTime;
     std::unique_ptr<Poller> _poller;
     std::unique_ptr<TimerQueue> _timerQueue;
 
-    int _wakeupFd;
+    int _wakeupFd; // 选择subReactor时通过该成员唤醒
     std::unique_ptr<Channel> _wakeupChannel;
 
     ChannelList _activeChannels;
@@ -80,6 +79,3 @@ private:
     std::mutex _mutex;
     std::vector<Functor> _pendingFunctors;
 };
-
-
-#endif

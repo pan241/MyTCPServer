@@ -11,9 +11,9 @@ class LogFile
 public:
     LogFile(const std::string& basename, 
             off_t rollSize, 
-            bool threadSafe = true, 
-            int flushInterval = 3, 
-            int checkEveryN = 1024);
+            bool threadSafe, 
+            int flushInterval, 
+            int checkEveryN);
     ~LogFile();
 
     void append(const char* data, int len);

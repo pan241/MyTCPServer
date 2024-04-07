@@ -1,9 +1,8 @@
-#ifndef EVENTTHREAD_H
-#define EVENTTHREAD_H
+#pragma once
 
 #include <mutex>
 #include <condition_variable>
-#include "../base/Thread.h"
+#include "Thread.h"
 
 class EventLoop;
 
@@ -27,5 +26,3 @@ private:
     std::condition_variable _cond;
     ThreadInitCallback _callback;
 };
-
-#endif

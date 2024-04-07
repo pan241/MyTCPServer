@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <string>
 
-#include "../base/Timestamp.h"
+#include "Timestamp.h"
 
 class HttpRequest
 {

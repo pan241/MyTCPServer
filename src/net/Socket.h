@@ -1,7 +1,6 @@
-#ifndef SOCKET_H
-#define SOCKET_H
+#pragma once
 
-#include "../base/noncopyable.h"
+#include "noncopyable.h"
 
 class InetAddress;
 
@@ -18,16 +17,15 @@ public:
 
     void bindAddress(const InetAddress& localaddr);
     void listen();
-    void accept(InetAddress* peeraddr);
+    int accept(InetAddress* peeraddr);
 
     void shutdownWrite();
-    void serTcpNoDelay(bool on);
-    void serReuseAddr(bool on);
-    void serReusePort(bool on);
-    void serKeepAlive(bool on);
+
+    void setTcpNoDelay(bool on);
+    void setReuseAddr(bool on);
+    void setReusePort(bool on);
+    void setKeepAlive(bool on);
 
 private:
     const int _sockfd;
 };
-
-#endif

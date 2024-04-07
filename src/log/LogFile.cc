@@ -46,3 +46,39 @@ void LogFile::append_unlocked(const char* data, int len)
 {
     _file->append(data, len);
 }
+
+bool LogFile::rollFile()
+{
+    time_t now = 0;
+    std::string filename = getLogFileName(_basename, &now);
+
+    time_t start = now / _kRollPerSeconds * _kRollPerSeconds;
+
+    if (now > _lastRoll)
+    {
+        _lastRoll = now;
+        _lastFlush = now;
+        _startOfPeriod = start;
+        _file.reset(new AppendFile(filename));
+        return true;
+    }
+    return false;
+}
+
+std::string LogFile::getLogFileName(const std::string& basename, time_t* now)
+{
+    std::string filename;
+    filename.reserve(basename.size() + 64);
+    filename = basename;
+
+    char timebuf[32];
+    struct tm tm;
+    *now = time(NULL);
+    gmtime_r(now, &tm);
+    strftime(timebuf, sizeof(timebuf), ".%Y%m%d-%H%M%S", &tm);
+    filename += timebuf;
+    
+    filename += ".log";
+
+    return filename;
+}

@@ -1,5 +1,5 @@
 #include "TcpServer.h"
-#include "../log/Logging.h"
+#include "Logger.h"
 
 static EventLoop* checkNotNull(EventLoop* loop)
 {
@@ -13,7 +13,7 @@ static EventLoop* checkNotNull(EventLoop* loop)
 TcpServer::TcpServer(EventLoop* loop,
               const InetAddress& listenAddr,
               const std::string& name,
-              Option option = kNoReusePort)
+              Option option)
     : _loop(checkNotNull(loop)),
       _ipPort(listenAddr.toIpPort()),
       _name(name),
@@ -25,7 +25,7 @@ TcpServer::TcpServer(EventLoop* loop,
       _started(0),
       _nextConnId(1)
 {
-    _acceptor->setNewConnectionCallback(std::bind(&TcpServer::newConnection, this, std::placeholders::_1,std::placeholders:: _2));
+    _acceptor->setNewConnectionCallback(std::bind(&TcpServer::newConnection, this, std::placeholders::_1,std::placeholders::_2));
 }
 
 TcpServer::~TcpServer()
@@ -45,16 +45,18 @@ void TcpServer::setThreadNum(int numThreads)
 
 void TcpServer::start()
 {
-    if (_started++ == 0)
+    if (_started == 0)
     {
         _threadPool->start(_threadInitCallback);
         _loop->runInLoop(std::bind(&Acceptor::listen, _acceptor.get()));
     }
+    _started++;
 }
 
+// 新客户端连接会调用该回调
 void TcpServer::newConnection(int sockfd, const InetAddress& peerAddr)
 {
-    EventLoop* ioLoop = _threadPool->getNextLoop();
+    EventLoop* ioLoop = _threadPool->getNextLoop(); // 轮询选择subloop
     char buf[64];
     snprintf(buf, sizeof(buf), "-%s#%d", _ipPort.c_str(), _nextConnId);
     ++_nextConnId;
@@ -67,13 +69,15 @@ void TcpServer::newConnection(int sockfd, const InetAddress& peerAddr)
     {
         LOG_ERROR << "sockets::getLocalAddr() failed";
     }
-
     InetAddress localAddr(local);
+
     TcpConnectionPtr conn(new TcpConnection(ioLoop, connName, sockfd, localAddr, peerAddr));
     _connections[connName] = conn;
+    // 用户设置TcpServer->TcpConnection->Channel->Poller->Channel
     conn->setConnectionCallback(_connectionCallback);
     conn->setMessageCallback(_messageCallback);
     conn->setWriteCompleteCallback(_writeCompleteCallback);
+    // 如何关闭连接
     conn->setCloseCallback(std::bind(&TcpServer::removeConnection, this, std::placeholders::_1));
     ioLoop->runInLoop(std::bind(&TcpConnection::connectEstablished, conn));
 }

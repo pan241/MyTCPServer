@@ -1,5 +1,5 @@
 #include "AsyncLogging.h"
-#include "../base/Timestamp.h"
+#include "Timestamp.h"
 
 #include <stdio.h>
 
@@ -45,7 +45,7 @@ void AsyncLogging::append(const char* logline, int len)
 
 void AsyncLogging::ThreadFunc()
 {
-    LogFile output(_basename, _rollSize, false);
+    LogFile output(_basename, _rollSize, false, 3, 1024);
     BufferPtr newBuffer1(new Buffer);
     BufferPtr newBuffer2(new Buffer);
     newBuffer1->bzero();

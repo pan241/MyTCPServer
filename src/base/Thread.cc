@@ -29,7 +29,7 @@ void Thread::setDefaultName()
     if (_name.empty())
     {
         char buf[32] = {0};
-        snprintf(buf, sizeof buf, "Thread%d", num);
+        snprintf(buf, sizeof(buf), "Thread%d", num);
         _name = buf;
     }
 }

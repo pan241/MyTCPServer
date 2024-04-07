@@ -1,5 +1,4 @@
-#ifndef TIMESTAMP_H
-#define TIMESTAMP_H
+#pragma once
 
 #include <string>
 #include <sys/time.h>
@@ -56,5 +55,3 @@ inline Timestamp addTime(Timestamp timestamp, double seconds)
     int64_t delta = static_cast<int64_t>(seconds * Timestamp::kMicroSecondsPerSecond);
     return Timestamp(timestamp.microSecondSinceEpoch() + delta);
 }
-
-#endif

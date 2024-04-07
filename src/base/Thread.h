@@ -1,7 +1,5 @@
-#ifndef THREAD_H
-#define THREAD_H
+#pragma once
 
-// c++ 11
 #include <thread>
 #include <memory>
 #include <functional>
@@ -15,7 +13,7 @@ class Thread : noncopyable
 public:
     using ThreadFunc = std::function<void()>;
 
-    explicit Thread(ThreadFunc, const std::string &name = std::string());
+    explicit Thread(ThreadFunc, const std::string &name);
     ~Thread();
 
     void start();
@@ -39,6 +37,3 @@ private:
 
     static std::atomic_int32_t _numCreated;
 };
-
-
-#endif

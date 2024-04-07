@@ -6,7 +6,7 @@
 
 #include "Channel.h"
 #include "InetAddress.h"
-#include "../base/noncopyable.h"
+#include "noncopyable.h"
 #include "EventLoop.h"
 
 class Connector : noncopyable,

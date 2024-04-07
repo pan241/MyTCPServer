@@ -3,6 +3,8 @@
 #include <poll.h>
 #include <errno.h>
 
+#include "Channel.h"
+
 PollPoller::PollPoller(EventLoop* loop)
     : Poller(loop)
 {

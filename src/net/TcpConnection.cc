@@ -1,10 +1,10 @@
 #include "TcpConnection.h"
 
 #include <string.h>
+#include <functional>
+#include <memory>
 
-
-
-#include "../log/Logging.h"
+#include "Logger.h"
 #include "Socket.h"
 #include "Channel.h"
 #include "EventLoop.h"
@@ -13,7 +13,7 @@ static EventLoop* checkLoop(EventLoop* loop)
 {
     if (loop == nullptr)
     {
-        LOG_FATAL << "mainLoop is nullpte";
+        LOG_FATAL << "subLoop is nullptr";
     }
     return loop;
 }
@@ -40,12 +40,12 @@ TcpConnection::TcpConnection(EventLoop* loop,
 
     LOG_INFO << "TcpConnection::ctor[" << _name << "] at " << this
             << " fd=" << sockfd;
-    _socket->serKeepAlive(true);
+    _socket->setKeepAlive(true);
 }
 
 TcpConnection::~TcpConnection()
 {
-    LOG_INFO << "TcoConnection::dtor[" << _name.c_str() << "] at " << this
+    LOG_INFO << "TcoConnection::dtor[" << _name << "] at " << this
             << " fd=" << _channel->fd()
             << " state=" << static_cast<int>(_state);
 }
@@ -64,7 +64,7 @@ void TcpConnection::send(const std::string& buf)
             sendInLoop(buf.c_str(), buf.size());
         }
         else
-        {
+        {   
             void(TcpConnection::*fp)(const void* data, size_t len) = &TcpConnection::sendInLoop;
             _loop->runInLoop(std::bind(fp, this, buf.c_str(), buf.size()));
         }
@@ -105,6 +105,7 @@ void TcpConnection::sendInLoop(const void* data, size_t len)
         return;
     }
 
+    // channel第一次写数据，缓冲区没有待发送
     if (!_channel->isWriting() && _outputBuffer.readableBytes() == 0)
     {
         nwrote = ::write(_channel->fd(), data, len);
@@ -130,6 +131,7 @@ void TcpConnection::sendInLoop(const void* data, size_t len)
         }
     }
 
+    // 一次write没有全部
     if (!faultError && remaining > 0)
     {
         ssize_t oldLen = _outputBuffer.readableBytes();
@@ -184,6 +186,8 @@ void TcpConnection::connectEstablished()
     setState(kConnected);
     _channel->tie(shared_from_this());
     _channel->enableReading();
+
+     _connectionCallback(shared_from_this());
 }
 
 void TcpConnection::connectDestroyed()
@@ -231,7 +235,7 @@ void TcpConnection::handleWrite()
                 _channel->disableWriting();
                 if (_writeCompleteCallback)
                 {
-
+                    _loop->queueInLoop(std::bind(_writeCompleteCallback, shared_from_this()));
                 }
                 if (_state == kDisconnecting)
                 {

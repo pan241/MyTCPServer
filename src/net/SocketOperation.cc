@@ -1,6 +1,7 @@
 #include "SocketOperation.h"
-#include "../log/Logging.h"
+#include "Logger.h"
 
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <errno.h>
@@ -8,30 +9,17 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-
-void setNonBlockAndCloseOnExec(int sockfd)
-{
-    int flags = ::fcntl(sockfd, F_GETFL, 0);
-    flags |= O_NONBLOCK;
-    int ret = ::fcntl(sockfd, F_SETFL, flags);
-
-    flags = ::fcntl(sockfd, F_GETFD, 0);
-    flags |= FD_CLOEXEC;
-    ret = ::fcntl(sockfd, F_SETFD, flags);
-}
-
 int sockets::createNonblockingOrDie(sa_family_t family)
 {
-    int sockfd = ::socket(family, SOCK_STREAM, IPPROTO_TCP);
+    int sockfd = ::socket(family, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
     if (sockfd < 0)
     {
         LOG_FATAL << "sockets::createNonblockingOrDie";
     }
-    setNonBlockAndCloseOnExec(sockfd);
     return sockfd;
 }
 
-int connect(int sockfd, const struct sockaddr* addr)
+int sockets::connect(int sockfd, const struct sockaddr* addr)
 {
     return ::connect(sockfd, addr, static_cast<socklen_t>(sizeof(struct sockaddr_in6)));
 }

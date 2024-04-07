@@ -1,5 +1,5 @@
 #include "HttpContext.h"
-#include "../net/Buffer.h"
+#include "Buffer.h"
 
 bool HttpContext::processRequestLine(const char* begin, const char* end)
 {

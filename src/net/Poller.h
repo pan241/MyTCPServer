@@ -1,13 +1,14 @@
 #ifndef POLLER_H
 #define POLLER_H
 
-#include "../base/noncopyable.h"
-#include "../net/Channel.h"
-#include "../base/Timestamp.h"
-#include "../net/EventLoop.h"
+#include "noncopyable.h"
+#include "Timestamp.h"
 
 #include <unordered_map>
 #include <vector>
+
+class Channel;
+class EventLoop;
 
 class Poller : noncopyable
 {
@@ -26,6 +27,7 @@ public:
     static Poller* newDefaultPoller(EventLoop* loop);
 
 protected:
+    // socketfd - channel
     using ChannelMap = std::unordered_map<int, Channel*>;
     ChannelMap _channels;
 

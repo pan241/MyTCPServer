@@ -1,10 +1,11 @@
 #ifndef ASYNCLOGGING_H
 #define ASYNCLOGGING_H
 
-#include "../base/Thread.h"
+#include "Thread.h"
 #include "LogStream.h"
 #include "LogFile.h"
 #include <atomic>
+#include <vector>
 #include <mutex>
 #include <condition_variable>
 
