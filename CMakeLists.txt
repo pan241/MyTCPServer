@@ -1,15 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(TcpServer)
 
-include_directories(
-    ${PROJECT_SOURCE_DIR}/src/base
-    ${PROJECT_SOURCE_DIR}/src/http
-    ${PROJECT_SOURCE_DIR}/src/log
-    ${PROJECT_SOURCE_DIR}/src/net
-    ${PROJECT_SOURCE_DIR}/src/net/poller
-    ${PROJECT_SOURCE_DIR}/src/timer
-    ${PROJECT_SOURCE_DIR}/include
-)
+include_directories(${PROJECT_SOURCE_DIR}/include)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")

@@ -1,0 +1,9 @@
+/home/parallels/Desktop/MyTCPServer/build/CMakeFiles/tcp_server.dir
+/home/parallels/Desktop/MyTCPServer/build/CMakeFiles/edit_cache.dir
+/home/parallels/Desktop/MyTCPServer/build/CMakeFiles/rebuild_cache.dir
+/home/parallels/Desktop/MyTCPServer/build/src/log/test/CMakeFiles/log_test.dir
+/home/parallels/Desktop/MyTCPServer/build/src/log/test/CMakeFiles/edit_cache.dir
+/home/parallels/Desktop/MyTCPServer/build/src/log/test/CMakeFiles/rebuild_cache.dir
+/home/parallels/Desktop/MyTCPServer/build/example/CMakeFiles/chatserver.dir
+/home/parallels/Desktop/MyTCPServer/build/example/CMakeFiles/edit_cache.dir
+/home/parallels/Desktop/MyTCPServer/build/example/CMakeFiles/rebuild_cache.dir

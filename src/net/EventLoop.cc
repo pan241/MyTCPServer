@@ -69,7 +69,7 @@ void EventLoop::loop()
     _looping = true;
     _quit = false;
 
-    LOG_INFO << "EventLoop " << this << " start looping";
+    //LOG_INFO << "EventLoop " << this << " start looping";
 
     while (!_quit)
     {

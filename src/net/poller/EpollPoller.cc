@@ -35,7 +35,7 @@ EpollPoller::~EpollPoller()
 void EpollPoller::updateChannel(Channel* channel)
 {
     const int index = channel->index();
-    LOG_INFO << "fd= " << channel->fd() << " events= " << channel->events() << " status= " << channel->index();
+    //LOG_INFO << "fd= " << channel->fd() << " events= " << channel->events() << " status= " << channel->index();
     if (index == kNew || index == kDeleted)
     {
         int fd = channel->fd();

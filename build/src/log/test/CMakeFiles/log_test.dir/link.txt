@@ -1,0 +1,1 @@
+/usr/bin/c++  -g -rdynamic CMakeFiles/log_test.dir/test.cc.o -o log_test  -Wl,-rpath,/home/parallels/Desktop/MyTCPServer/lib ../../../../lib/libtcp_server.so 

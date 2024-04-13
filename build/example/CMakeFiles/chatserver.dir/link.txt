@@ -1,0 +1,1 @@
+/usr/bin/c++  -g -rdynamic CMakeFiles/chatserver.dir/example.cc.o -o chatserver  -Wl,-rpath,/home/parallels/Desktop/MyTCPServer/lib ../../lib/libtcp_server.so 

@@ -1,6 +1,6 @@
 #include "HttpServer.h"
 
-#include "../log/Logging.h"
+#include "Logger.h"
 #include "HttpContext.h"
 #include "HttpRequest.h"
 #include "HttpResponse.h"
